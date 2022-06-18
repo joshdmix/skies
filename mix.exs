@@ -47,7 +47,8 @@ defmodule Skies.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:httpoison, "~> 1.8"},
       {:geoip, "~> 0.2"},
-      {:live_map, "~> 0.0.1"}
+      {:live_map, "~> 0.0.1"},
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
     ]
   end
 
@@ -60,7 +61,7 @@ defmodule Skies.MixProject do
   defp aliases do
     [
       setup: ["deps.get"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
     ]
   end
 end
