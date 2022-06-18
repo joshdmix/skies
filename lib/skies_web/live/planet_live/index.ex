@@ -9,14 +9,13 @@ defmodule SkiesWeb.PlanetLive.Index do
     {:ok, %{latitude: latitude, longitude: longitude, data: data}} = list_planets()
 
     headers =
-      data["header"]
+      data.header
       |> Enum.map(fn dt ->
         {:ok, dt, _} = DateTime.from_iso8601(dt)
         DateTime.truncate(dt, :second)
       end)
 
-    rows = data["rows"]
-    IO.inspect(rows, label: "rows")
+    rows = data.rows
 
     {:ok,
      assign(socket,

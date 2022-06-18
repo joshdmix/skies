@@ -1,6 +1,9 @@
 <div>
-  <p>lat: <%= @latitude %></p>
-  <p>long: <%= @longitude %></p>
+  <div class="p-5 border border-black w-1/6">
+    <h4>Observer Location</h4>
+    <p>lat: <%= @latitude %></p>
+    <p>long: <%= @longitude %></p>
+  </div>
   <table>
     <tr>
       <%= for header <- @headers do %>
@@ -8,9 +11,13 @@
       <% end %>
     </tr>
     <%= for row <- @rows do %>
-    <tr>
-      <%= for cell <- row["cells"] do %>
-        <td><%= inspect(cell) %></td>
+    <tr class="border border-black">
+      <%= for cell <- row.cells do %>
+        <td class="border border-black p-2">
+          <%= for {k, v} <- cell do %>
+            <div><%= k %>: <%= inspect(v) %></div>
+          <% end %>
+        </td>
       <% end %>
     </tr>
     <% end %>
@@ -41,3 +48,4 @@
   </:zoom_out>
 </.live_component>
 -->
+      <%# <% {date: date, distance: distance, extraInfo: extra_info, id: id, name; name, position: position, horizontal: horizontal} <- row.cells do = cell %> %>

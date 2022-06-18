@@ -30,29 +30,7 @@ defmodule Skies.Planets do
 
   """
   def list_planets do
-    params =
-      [
-        latitude: @lat,
-        longitude: @long,
-        elevation: @elevation,
-        from_date: @today,
-        to_date: @tomorrow,
-        time: @time
-      ]
-      |> Enum.map(fn {k, v} -> {k, to_string(v)} end)
-
-    options = [params: params]
-
-    with {:ok, %HTTPoison.Response{status_code: 200, body: body}} <-
-           request("https://api.astronomyapi.com/api/v2/bodies/positions", options) do
-      body = body |> Jason.decode!()
-
-      observer = body["data"]["observer"]
-      latitude = observer["location"]["latitude"]
-      longitude = observer["location"]["longitude"]
-
-      {:ok, %{latitude: latitude, longitude: longitude, data: body["data"]["table"]}}
-    end
+    Skies.Requests.bodies_request()
   end
 
   # @doc """

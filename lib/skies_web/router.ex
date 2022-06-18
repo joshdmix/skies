@@ -16,14 +16,13 @@ defmodule SkiesWeb.Router do
 
   scope "/", SkiesWeb do
     pipe_through(:browser)
+    live("/", PlanetLive.Index, :index)
     live("/planets", PlanetLive.Index, :index)
     live("/planets/new", PlanetLive.Index, :new)
     live("/planets/:id/edit", PlanetLive.Index, :edit)
 
     live("/planets/:id", PlanetLive.Show, :show)
     live("/planets/:id/show/edit", PlanetLive.Show, :edit)
-
-    get("/", PageController, :index)
   end
 
   # Other scopes may use custom stacks.

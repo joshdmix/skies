@@ -48,7 +48,9 @@ defmodule Skies.MixProject do
       {:httpoison, "~> 1.8"},
       {:geoip, "~> 0.2"},
       {:live_map, "~> 0.0.1"},
-      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
+      {:ecto_sql, "~> 3.0"},
+      {:postgrex, ">= 0.0.0"}
     ]
   end
 
