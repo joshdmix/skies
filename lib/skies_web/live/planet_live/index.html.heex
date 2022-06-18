@@ -1,0 +1,43 @@
+<div>
+  <p>lat: <%= @latitude %></p>
+  <p>long: <%= @longitude %></p>
+  <table>
+    <tr>
+      <%= for header <- @headers do %>
+      <th><%= header %></th>
+      <% end %>
+    </tr>
+    <%= for row <- @rows do %>
+    <tr>
+      <%= for cell <- row["cells"] do %>
+        <td><%= inspect(cell) %></td>
+      <% end %>
+    </tr>
+    <% end %>
+  </table>
+</div>
+<!--
+<.live_component
+  module={LiveMap} id="live-map"
+  title="Example Live Map"
+  width="800" height="600"
+  latitude={@latitude} longitude={@longitude} zoom="11"
+>
+  <%# Styles slot %>
+  <:style>
+    image {
+      opacity: 0.75;
+    }
+  </:style>
+
+  <%# Custom Zoom-In Button %>
+  <:zoom_in>
+    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+  </:zoom_in>
+
+  <%# Custom Zoom-Out Button %>
+  <:zoom_out>
+    <path d="M19 13H5v-2h14v2z"/>
+  </:zoom_out>
+</.live_component>
+-->
