@@ -14,9 +14,33 @@
     <tr class="border border-black">
       <%= for cell <- row.cells do %>
         <td class="border border-black p-2">
+        <div>
+        name: <%= cell.name %>
+        </div>
+        <div>
+        km from earth: <%= cell.distance.fromEarth.km %>
+        </div>
+        <div>
+          position: 
+            <div class="pl-5">
+              <div class="">constellation: <%= inspect(cell.position.constellation.name) %></div>
+              <div class="">equatorial declination (degrees): <%= cell.position.equatorial.declination.degrees %></div>
+              <div class="">equatorial right ascension (hours): <%= cell.position.equatorial.rightAscension.hours %></div>
+          </div>
+        </div>
+        <div>
+          horizonal: 
+            <div class="pl-5">
+              <div class="">altitude (degrees): <%= cell.position.horizonal.altitude.degrees %></div>
+              <div class="">azimuth (degrees): <%= cell.position.horizonal.azimuth.degrees %></div>
+          </div>
+        </div>
+        
+        <!--
           <%= for {k, v} <- cell do %>
             <div><%= k %>: <%= inspect(v) %></div>
           <% end %>
+        -->
         </td>
       <% end %>
     </tr>
@@ -48,4 +72,4 @@
   </:zoom_out>
 </.live_component>
 -->
-      <%# <% {date: date, distance: distance, extraInfo: extra_info, id: id, name; name, position: position, horizontal: horizontal} <- row.cells do = cell %> %>
+      <%# <% {date: date, distance: distance, extraInfo: extra_info, id: id, name; name, position: position, horizontal: horizontal} <- row.cells do = cell %>

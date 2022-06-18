@@ -70,7 +70,7 @@ defmodule Skies.Requests do
   end
 
   defp handle_response_cell(cell) do
-    allowed = ~w(date distance extraInfo id name position)
+    allowed = ~w(date distance extraInfo id name position horizontal)
 
     cell |> Map.take(allowed) |> keys_to_atoms
   end
