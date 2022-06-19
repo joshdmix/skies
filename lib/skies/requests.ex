@@ -10,7 +10,7 @@ defmodule Skies.Requests do
   @time Time.utc_now() |> Time.truncate(:second)
 
   defp request(url, options \\ []) do
-    auth_hash = "Basic #{Application.get_env(:skies, :hash)}" |> IO.inspect(label: "hash")
+    auth_hash = "Basic #{Application.get_env(:skies, :hash)}"
     headers = [Authorization: auth_hash]
 
     {:ok, response} = HTTPoison.get(url, headers, options)
@@ -34,10 +34,6 @@ defmodule Skies.Requests do
            request("https://api.astronomyapi.com/api/v2/bodies/positions", options) do
       body = body |> Jason.decode!()
 
-      observer = body["data"]["observer"]
-      latitude = observer["location"]["latitude"]
-      longitude = observer["location"]["longitude"]
-
       header = body["data"]["table"]["header"]
 
       rows =
@@ -45,7 +41,24 @@ defmodule Skies.Requests do
         |> Enum.map(&handle_response_row/1)
         |> List.flatten()
 
-      {:ok, %{latitude: latitude, longitude: longitude, data: %{header: header, rows: rows}}}
+      {:ok,
+       %{
+         elevation: @elevation,
+         latitude: @lat,
+         longitude: @long,
+         data: %{header: header, rows: rows}
+       }}
+    end
+  end
+
+  def position_request(address) do
+    position_stack_key = Application.get_env(:skies, :position)
+
+    url =
+      "http://api.positionstack.com/v1/forward?access_key=#{position_stack_key}&query=#{address}"
+
+    with {:ok, %HTTPoison.Response{status_code: 200, body: body}} <- request(url) do
+      body = body |> Jason.decode!()
     end
   end
 
@@ -70,10 +83,22 @@ defmodule Skies.Requests do
   end
 
   defp handle_response_cell(cell) do
-    allowed = ~w(date distance extraInfo id name position horizontal)
+    allowed = ~w(date distance extra_info id name position horizontal)
 
-    cell |> Map.take(allowed) |> keys_to_atoms
+    cell |> keys_to_snakecase |> Map.take(allowed) |> keys_to_atoms
   end
+
+  def keys_to_snakecase(json) when is_map(json) do
+    Map.new(json, &reduce_keys_to_snakecase/1)
+  end
+
+  defp reduce_keys_to_snakecase({key, val}) when is_map(val),
+    do: {Macro.underscore(key), keys_to_snakecase(val)}
+
+  defp reduce_keys_to_snakecase({key, val}) when is_list(val),
+    do: {Macro.underscore(key), Enum.map(val, &keys_to_snakecase(&1))}
+
+  defp reduce_keys_to_snakecase({key, val}), do: {Macro.underscore(key), val}
 
   def keys_to_atoms(json) when is_map(json) do
     Map.new(json, &reduce_keys_to_atoms/1)

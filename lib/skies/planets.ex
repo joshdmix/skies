@@ -10,7 +10,7 @@ defmodule Skies.Planets do
   @time Time.utc_now() |> Time.truncate(:second)
 
   defp request(url, options \\ []) do
-    auth_hash = "Basic #{Application.get_env(:skies, :hash)}" |> IO.inspect(label: "hash")
+    auth_hash = "Basic #{Application.get_env(:skies, :hash)}"
     headers = [Authorization: auth_hash]
 
     {:ok, response} = HTTPoison.get(url, headers, options)

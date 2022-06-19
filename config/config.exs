@@ -35,7 +35,8 @@ config :phoenix, :json_library, Jason
 config :skies,
   # skies_id: System.get_env("SKIES_ID"),
   # skies_secret: System.get_env("SKIES_SECRET")
-  hash: (System.get_env("SKIES_ID") <> ":" <> System.get_env("SKIES_SECRET")) |> Base.encode64()
+  hash: (System.get_env("SKIES_ID") <> ":" <> System.get_env("SKIES_SECRET")) |> Base.encode64(),
+  position: System.get_env("POSITION_STACK")
 
 config :tailwind,
   version: "3.1.3",

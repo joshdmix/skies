@@ -2,11 +2,21 @@ defmodule SkiesWeb.PlanetLive.Index do
   use SkiesWeb, :live_view
 
   alias Skies.Planets
-  alias Skies.Planets.Planet
+  alias SkiesWeb.Live.Components.Body
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, %{latitude: latitude, longitude: longitude, data: data}} = list_planets()
+    peer_data = get_connect_info(socket, :peer_data)
+
+    get_lat_long(peer_data.address)
+
+    {:ok,
+     %{
+       elevation: elevation,
+       latitude: latitude,
+       longitude: longitude,
+       data: data
+     }} = list_planets()
 
     headers =
       data.header
@@ -19,6 +29,7 @@ defmodule SkiesWeb.PlanetLive.Index do
 
     {:ok,
      assign(socket,
+       elevation: elevation,
        latitude: latitude,
        longitude: longitude,
        data: data,
@@ -34,5 +45,9 @@ defmodule SkiesWeb.PlanetLive.Index do
 
   defp list_planets do
     Planets.list_planets()
+  end
+
+  defp get_lat_long(ip) do
+    IO.inspect(ip)
   end
 end

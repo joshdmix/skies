@@ -1,8 +1,9 @@
 <div>
-  <div class="p-5 border border-black w-1/6">
+  <div class="p-5 border border-black w-1/5">
     <h4>Observer Location</h4>
     <p>lat: <%= @latitude %></p>
     <p>long: <%= @longitude %></p>
+    <p>elevation: <%= @elevation %>m</p>
   </div>
   <table>
     <tr>
@@ -14,62 +15,11 @@
     <tr class="border border-black">
       <%= for cell <- row.cells do %>
         <td class="border border-black p-2">
-        <div>
-        name: <%= cell.name %>
-        </div>
-        <div>
-        km from earth: <%= cell.distance.fromEarth.km %>
-        </div>
-        <div>
-          position: 
-            <div class="pl-5">
-              <div class="">constellation: <%= inspect(cell.position.constellation.name) %></div>
-              <div class="">equatorial declination (degrees): <%= cell.position.equatorial.declination.degrees %></div>
-              <div class="">equatorial right ascension (hours): <%= cell.position.equatorial.rightAscension.hours %></div>
-          </div>
-        </div>
-        <div>
-          horizonal: 
-            <div class="pl-5">
-              <div class="">altitude (degrees): <%= cell.position.horizonal.altitude.degrees %></div>
-              <div class="">azimuth (degrees): <%= cell.position.horizonal.azimuth.degrees %></div>
-          </div>
-        </div>
-        
-        <!--
-          <%= for {k, v} <- cell do %>
-            <div><%= k %>: <%= inspect(v) %></div>
-          <% end %>
-        -->
+          <%= Body.body(cell)
+          %>
         </td>
       <% end %>
     </tr>
     <% end %>
   </table>
 </div>
-<!--
-<.live_component
-  module={LiveMap} id="live-map"
-  title="Example Live Map"
-  width="800" height="600"
-  latitude={@latitude} longitude={@longitude} zoom="11"
->
-  <%# Styles slot %>
-  <:style>
-    image {
-      opacity: 0.75;
-    }
-  </:style>
-
-  <%# Custom Zoom-In Button %>
-  <:zoom_in>
-    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-  </:zoom_in>
-
-  <%# Custom Zoom-Out Button %>
-  <:zoom_out>
-    <path d="M19 13H5v-2h14v2z"/>
-  </:zoom_out>
-</.live_component>
--->
-      <%# <% {date: date, distance: distance, extraInfo: extra_info, id: id, name; name, position: position, horizontal: horizontal} <- row.cells do = cell %>
