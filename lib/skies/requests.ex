@@ -13,7 +13,14 @@ defmodule Skies.Requests do
     auth_hash = "Basic #{Application.get_env(:skies, :hash)}"
     headers = [Authorization: auth_hash]
 
-    {:ok, response} = HTTPoison.get(url, headers, options)
+    HTTPoison.get(url, headers, options)
+  end
+
+  defp post_request(url, body) do
+    auth_hash = "Basic #{Application.get_env(:skies, :hash)}"
+    headers = [Authorization: auth_hash]
+
+    HTTPoison.post(url, body, headers)
   end
 
   def bodies_request do
@@ -51,14 +58,98 @@ defmodule Skies.Requests do
     end
   end
 
+  def moon_phase_request(
+        observer \\ %{date: @today, latitude: @lat, longitude: @long},
+        view \\ %{type: "portrait-simple"},
+        style \\ %{"moonStyle" => "sketch", "backgroundStyle" => "stars"}
+      ) do
+    body = %{observer: observer, style: style, view: view} |> Jason.encode!()
+
+    with {:ok, %HTTPoison.Response{status_code: 200, body: body}} <-
+           post_request(
+             "https://api.astronomyapi.com/api/v2/studio/moon-phase",
+             body
+           ) do
+      %{"data" => %{"imageUrl" => image_url}} = Jason.decode!(body)
+
+      {:ok, image_url}
+    end
+  end
+
+  def star_chart_request(
+        # todo - why does this timeout?
+        observer \\ %{date: @today, latitude: @lat, longitude: @long},
+        view \\ %{type: "constellation", parameters: %{constellation: "ori"}}
+      ) do
+    body = %{observer: observer, view: view} |> Jason.encode!()
+
+    post_request(
+      "https://api.astronomyapi.com/api/v2/studio/star-chart",
+      body
+    )
+  end
+
   def position_request(address) do
     position_stack_key = Application.get_env(:skies, :position)
+    IO.inspect(label: "in position_request")
 
     url =
       "http://api.positionstack.com/v1/forward?access_key=#{position_stack_key}&query=#{address}"
 
     with {:ok, %HTTPoison.Response{status_code: 200, body: body}} <- request(url) do
-      body = body |> Jason.decode!()
+      %{
+        "data" => [
+          %{
+            # "administrative_area" => nil,
+            # "confidence" => 0.6,
+            # "continent" => "North America",
+            # "country" => "United States",
+            # "country_code" => "USA",
+            # "county" => "Boulder County",
+            # "label" => "Boulder, CO, USA",
+            "latitude" => longitude,
+            "locality" => locality,
+            "longitude" => latitude,
+            # "name" => name,
+            # "neighbourhood" => nil,
+            # "number" => nil,
+            # "postal_code" => nil,
+            # "region" => "Colorado",
+            "region_code" => region_code
+            # "street" => nil,
+            # "type" => "locality"
+          },
+          %{
+            # "administrative_area" => nil,
+            # "confidence" => 0.4,
+            # "continent" => "North America",
+            # "country" => "United States",
+            # "country_code" => "USA",
+            "county" => county
+            # "label" => "Boulder County, CO, USA",
+            # "latitude" => 40.087912,
+            # "locality" => nil,
+            # "longitude" => -105.326561,
+            # "name" => "Boulder County",
+            # "neighbourhood" => nil,
+            # "number" => nil,
+            # "postal_code" => nil,
+            # "region" => "Colorado",
+            # "region_code" => "CO",
+            # "street" => nil,
+            # "type" => "county"
+          }
+        ]
+      } = body |> Jason.decode!() |> IO.inspect()
+
+      {:ok,
+       %{
+         latitude: latitude,
+         longitude: longitude,
+         city: locality,
+         state: region_code,
+         county: county
+       }}
     end
   end
 

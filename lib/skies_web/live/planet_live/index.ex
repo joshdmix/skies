@@ -3,6 +3,7 @@ defmodule SkiesWeb.PlanetLive.Index do
 
   alias Skies.Planets
   alias SkiesWeb.Live.Components.Body
+  alias __MODULE__.Address
 
   @impl true
   def mount(_params, _session, socket) do
@@ -27,8 +28,12 @@ defmodule SkiesWeb.PlanetLive.Index do
 
     rows = data.rows
 
+    address_changeset = Address.changeset() |> IO.inspect()
+
     {:ok,
      assign(socket,
+       address: "",
+       address_changeset: address_changeset,
        elevation: elevation,
        latitude: latitude,
        longitude: longitude,
@@ -36,6 +41,26 @@ defmodule SkiesWeb.PlanetLive.Index do
        headers: headers,
        rows: rows
      )}
+  end
+
+  def handle_event("update_address", %{"address" => %{"address" => address}}, socket) do
+    %{latitude: latitude, longitude: longitude} = get_lat_long_from_address(address)
+
+    {:noreply,
+     assign(socket,
+       address: address,
+       latitude: latitude,
+       longitude: longitude
+       #  elevation: elevation
+     )}
+
+    # get_lat_long_from_address(address)
+  end
+
+  defp get_lat_long_from_address(address) do
+    with {:ok, position} <- Skies.Requests.position_request(address) do
+      position
+    end
   end
 
   # @impl true
@@ -48,6 +73,19 @@ defmodule SkiesWeb.PlanetLive.Index do
   end
 
   defp get_lat_long(ip) do
-    IO.inspect(ip)
+    #
+  end
+
+  defmodule Address do
+    defstruct [:address]
+    import Ecto.Changeset
+
+    def changeset(address \\ %{address: "500 Main St Boulder CO"}) do
+      types = %{address: :string}
+
+      {%Address{}, types}
+      |> cast(address, Map.keys(types))
+      |> validate_required([:address])
+    end
   end
 end
