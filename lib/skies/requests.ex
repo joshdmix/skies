@@ -2,12 +2,6 @@ defmodule Skies.Requests do
   @moduledoc """
   The Planets context.
   """
-  @lat 38.253
-  @long -85.758
-  @elevation 500
-  @today Date.utc_today()
-  @tomorrow @today |> Date.add(1)
-  @time Time.utc_now() |> Time.truncate(:second)
 
   defp request(url, options \\ []) do
     auth_hash = "Basic #{Application.get_env(:skies, :hash)}"
@@ -23,39 +17,60 @@ defmodule Skies.Requests do
     HTTPoison.post(url, body, headers)
   end
 
-  def bodies_request do
-    params =
-      [
-        latitude: @lat,
-        longitude: @long,
-        elevation: @elevation,
-        from_date: @today,
-        to_date: @tomorrow,
-        time: @time
-      ]
-      |> Enum.map(fn {k, v} -> {k, to_string(v)} end)
+  @type bodies_request :: %{
+          latitude: integer(),
+          longitude: integer(),
+          elevation: integer(),
+          from_date: Date.t(),
+          to_date: Date.t(),
+          time: Time.t()
+        }
+
+  @type bodies_response ::
+          {:ok,
+           %{
+             elevation: String.t(),
+             latitude: String.t(),
+             longitude: String.t(),
+             headers: [map()],
+             rows: [map()]
+           }}
+
+  @spec bodies_request(bodies_request()) :: bodies_response()
+  def bodies_request(params) do
+    params |> Enum.map(fn {k, v} -> {k, to_string(v)} end)
 
     options = [params: params]
 
     with {:ok, %HTTPoison.Response{status_code: 200, body: body}} <-
            request("https://api.astronomyapi.com/api/v2/bodies/positions", options) do
-      body = body |> Jason.decode!()
-
-      header = body["data"]["table"]["header"]
-
-      rows =
-        body["data"]["table"]["rows"]
-        |> Enum.map(&handle_response_row/1)
-        |> List.flatten()
-
-      {:ok,
-       %{
-         elevation: @elevation,
-         latitude: @lat,
-         longitude: @long,
-         data: %{header: header, rows: rows}
-       }}
+      body |> Jason.decode!() |> format_bodies_response()
     end
+  end
+
+  defp format_bodies_response(resp_body) do
+    observer = resp_body["data"]["observer"]["location"]
+
+    headers =
+      resp_body["data"]["table"]["header"]
+      |> Enum.map(fn dt ->
+        {:ok, dt, _} = DateTime.from_iso8601(dt)
+        DateTime.truncate(dt, :second)
+      end)
+
+    rows =
+      resp_body["data"]["table"]["rows"]
+      |> Enum.map(&handle_response_row/1)
+      |> List.flatten()
+
+    {:ok,
+     %{
+       elevation: observer["elevation"],
+       latitude: observer["latitude"],
+       longitude: observer["longitude"],
+       headers: headers,
+       rows: rows
+     }}
   end
 
   def moon_phase_request(
@@ -91,56 +106,33 @@ defmodule Skies.Requests do
 
   def position_request(address) do
     position_stack_key = Application.get_env(:skies, :position)
-    IO.inspect(label: "in position_request")
 
     url =
       "http://api.positionstack.com/v1/forward?access_key=#{position_stack_key}&query=#{address}"
 
     with {:ok, %HTTPoison.Response{status_code: 200, body: body}} <- request(url) do
       %{
-        "data" => [
-          %{
-            # "administrative_area" => nil,
-            # "confidence" => 0.6,
-            # "continent" => "North America",
-            # "country" => "United States",
-            # "country_code" => "USA",
-            # "county" => "Boulder County",
-            # "label" => "Boulder, CO, USA",
-            "latitude" => longitude,
-            "locality" => locality,
-            "longitude" => latitude,
-            # "name" => name,
-            # "neighbourhood" => nil,
-            # "number" => nil,
-            # "postal_code" => nil,
-            # "region" => "Colorado",
-            "region_code" => region_code
-            # "street" => nil,
-            # "type" => "locality"
-          },
-          %{
-            # "administrative_area" => nil,
-            # "confidence" => 0.4,
-            # "continent" => "North America",
-            # "country" => "United States",
-            # "country_code" => "USA",
-            "county" => county
-            # "label" => "Boulder County, CO, USA",
-            # "latitude" => 40.087912,
-            # "locality" => nil,
-            # "longitude" => -105.326561,
-            # "name" => "Boulder County",
-            # "neighbourhood" => nil,
-            # "number" => nil,
-            # "postal_code" => nil,
-            # "region" => "Colorado",
-            # "region_code" => "CO",
-            # "street" => nil,
-            # "type" => "county"
-          }
-        ]
-      } = body |> Jason.decode!() |> IO.inspect()
+        # "administrative_area" => nil,
+        # "confidence" => 0.6,
+        # "continent" => "North America",
+        # "country" => "United States",
+        # "country_code" => "USA",
+        "county" => county,
+        # "label" => "Boulder, CO, USA",
+        "latitude" => latitude,
+        "locality" => locality,
+        "longitude" => longitude,
+        # "name" => name,
+        # "neighbourhood" => nil,
+        # "number" => nil,
+        # "postal_code" => nil,
+        # "region" => "Colorado",
+        "region_code" => region_code
+        # "street" => nil,
+        # "type" => "locality"
+      } = body |> Jason.decode!() |> Map.get("data") |> List.first()
+
+      # todo - currently this assumes first position result is correct
 
       {:ok,
        %{

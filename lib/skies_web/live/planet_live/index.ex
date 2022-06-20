@@ -5,56 +5,86 @@ defmodule SkiesWeb.PlanetLive.Index do
   alias SkiesWeb.Live.Components.Body
   alias __MODULE__.Address
 
+  @lat 38.253
+  @long -85.758
+  @elevation 500
+  @today Date.utc_today()
+  @tomorrow @today |> Date.add(1)
+  @time Time.utc_now() |> Time.truncate(:second)
+
   @impl true
   def mount(_params, _session, socket) do
-    peer_data = get_connect_info(socket, :peer_data)
+    # peer_data = get_connect_info(socket, :peer_data)
 
-    get_lat_long(peer_data.address)
+    # get_lat_long(peer_data.address)
+    default_params = %{
+      latitude: @lat,
+      longitude: @long,
+      elevation: @elevation,
+      from_date: @today,
+      to_date: @tomorrow,
+      time: @time
+    }
 
     {:ok,
      %{
        elevation: elevation,
        latitude: latitude,
        longitude: longitude,
-       data: data
-     }} = list_planets()
-
-    headers =
-      data.header
-      |> Enum.map(fn dt ->
-        {:ok, dt, _} = DateTime.from_iso8601(dt)
-        DateTime.truncate(dt, :second)
-      end)
-
-    rows = data.rows
-
-    address_changeset = Address.changeset() |> IO.inspect()
+       headers: headers,
+       rows: rows
+     }} = list_planets(default_params)
 
     {:ok,
      assign(socket,
        address: "",
-       address_changeset: address_changeset,
+       address_changeset: Address.changeset(),
        elevation: elevation,
+       from_date: @today,
+       to_date: @tomorrow,
+       time: @time,
        latitude: latitude,
        longitude: longitude,
-       data: data,
        headers: headers,
        rows: rows
      )}
   end
 
-  def handle_event("update_address", %{"address" => %{"address" => address}}, socket) do
+  def handle_event(
+        "update_address",
+        %{"address" => %{"address" => address}},
+        %{assigns: %{elevation: elevation, time: time, from_date: from_date, to_date: to_date}} =
+          socket
+      ) do
     %{latitude: latitude, longitude: longitude} = get_lat_long_from_address(address)
 
-    {:noreply,
-     assign(socket,
-       address: address,
+    {:ok,
+     %{
+       elevation: elevation,
        latitude: latitude,
-       longitude: longitude
-       #  elevation: elevation
-     )}
+       longitude: longitude,
+       headers: headers,
+       rows: rows
+     }} =
+      list_planets(%{
+        latitude: latitude,
+        longitude: longitude,
+        elevation: elevation,
+        from_date: from_date,
+        to_date: to_date,
+        time: time
+      })
 
-    # get_lat_long_from_address(address)
+    socket =
+      assign(socket,
+        address: address,
+        latitude: latitude,
+        longitude: longitude,
+        headers: headers,
+        rows: rows
+      )
+
+    {:noreply, socket}
   end
 
   defp get_lat_long_from_address(address) do
@@ -68,8 +98,8 @@ defmodule SkiesWeb.PlanetLive.Index do
   #   {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   # end
 
-  defp list_planets do
-    Planets.list_planets()
+  defp list_planets(params) do
+    Planets.list_planets(params)
   end
 
   defp get_lat_long(ip) do
@@ -80,7 +110,7 @@ defmodule SkiesWeb.PlanetLive.Index do
     defstruct [:address]
     import Ecto.Changeset
 
-    def changeset(address \\ %{address: "500 Main St Boulder CO"}) do
+    def changeset(address \\ %{address: ""}) do
       types = %{address: :string}
 
       {%Address{}, types}
