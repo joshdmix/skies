@@ -1,13 +1,14 @@
-<div>
-  <div class="border border-black">
+<div class="flex-auto content-center p-5">
+  <div class="p-2">
     <.form let={f} for={@address_changeset} phx-submit="update_address">
       <%= label f, :address %>
       <%= text_input f, :address %>
     </.form>
   
   </div>
-  <div class="p-5 border border-black w-1/5">
+  <div class="p-5 m-2 border border-black">
     <h4>Observer Location</h4>
+    <p><%= @address %></p>
     <p>lat: <%= @latitude %></p>
     <p>long: <%= @longitude %></p>
     <p>elevation: <%= @elevation %>m</p>

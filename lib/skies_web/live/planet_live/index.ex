@@ -5,9 +5,9 @@ defmodule SkiesWeb.PlanetLive.Index do
   alias SkiesWeb.Live.Components.Body
   alias __MODULE__.Address
 
-  @lat 38.253
-  @long -85.758
-  @elevation 500
+  @address "Berkeley CA"
+  @elevation 0
+  # todo - need to do an elevation lookup on address change
   @today Date.utc_today()
   @tomorrow @today |> Date.add(1)
   @time Time.utc_now() |> Time.truncate(:second)
@@ -15,11 +15,13 @@ defmodule SkiesWeb.PlanetLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     # peer_data = get_connect_info(socket, :peer_data)
+    address = @address
+    %{latitude: latitude, longitude: longitude} = get_lat_long_from_address(address)
 
     # get_lat_long(peer_data.address)
     default_params = %{
-      latitude: @lat,
-      longitude: @long,
+      latitude: latitude,
+      longitude: longitude,
       elevation: @elevation,
       from_date: @today,
       to_date: @tomorrow,
@@ -37,7 +39,7 @@ defmodule SkiesWeb.PlanetLive.Index do
 
     {:ok,
      assign(socket,
-       address: "",
+       address: address,
        address_changeset: Address.changeset(),
        elevation: elevation,
        from_date: @today,
