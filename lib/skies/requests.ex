@@ -73,10 +73,13 @@ defmodule Skies.Requests do
      }}
   end
 
+  # observer \\ %{date: @today, latitude: @lat, longitude: @long},
+  # view \\ %{type: "portrait-simple"},
+  # style \\ %{"moonStyle" => "sketch", "backgroundStyle" => "stars"}
   def moon_phase_request(
-        observer \\ %{date: @today, latitude: @lat, longitude: @long},
-        view \\ %{type: "portrait-simple"},
-        style \\ %{"moonStyle" => "sketch", "backgroundStyle" => "stars"}
+        observer,
+        view,
+        style
       ) do
     body = %{observer: observer, style: style, view: view} |> Jason.encode!()
 
@@ -91,10 +94,12 @@ defmodule Skies.Requests do
     end
   end
 
+  # observer \\ %{date: @today, latitude: @lat, longitude: @long},
+  # view \\ %{type: "constellation", parameters: %{constellation: "ori"}}
   def star_chart_request(
         # todo - why does this timeout?
-        observer \\ %{date: @today, latitude: @lat, longitude: @long},
-        view \\ %{type: "constellation", parameters: %{constellation: "ori"}}
+        observer,
+        view
       ) do
     body = %{observer: observer, view: view} |> Jason.encode!()
 
