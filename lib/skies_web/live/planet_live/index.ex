@@ -5,7 +5,7 @@ defmodule SkiesWeb.PlanetLive.Index do
   alias SkiesWeb.Live.Components.Body
   alias __MODULE__.Address
 
-  @address "Berkeley CA"
+  @address "Portsmouth NH"
   @elevation 0
   # todo - need to do an elevation lookup on address change
   @today Date.utc_today()
@@ -24,7 +24,7 @@ defmodule SkiesWeb.PlanetLive.Index do
       longitude: longitude,
       elevation: @elevation,
       from_date: @today,
-      to_date: @tomorrow,
+      to_date: @today,
       time: @time
     }
 
@@ -37,6 +37,13 @@ defmodule SkiesWeb.PlanetLive.Index do
        rows: rows
      }} = list_planets(default_params)
 
+    {:ok, moon_phase_url} =
+      Skies.Requests.moon_phase_request(
+        %{date: @today, latitude: latitude, longitude: longitude},
+        %{type: "portrait-simple"},
+        %{"moonStyle" => "sketch", "backgroundStyle" => "stars"}
+      )
+
     {:ok,
      assign(socket,
        address: address,
@@ -48,7 +55,8 @@ defmodule SkiesWeb.PlanetLive.Index do
        latitude: latitude,
        longitude: longitude,
        headers: headers,
-       rows: rows
+       rows: rows,
+       moon_phase_url: moon_phase_url
      )}
   end
 
@@ -77,13 +85,21 @@ defmodule SkiesWeb.PlanetLive.Index do
         time: time
       })
 
+    {:ok, moon_phase_url} =
+      Skies.Requests.moon_phase_request(
+        %{date: @today, latitude: latitude, longitude: longitude},
+        %{type: "portrait-simple"},
+        %{"moonStyle" => "sketch", "backgroundStyle" => "stars"}
+      )
+
     socket =
       assign(socket,
         address: address,
         latitude: latitude,
         longitude: longitude,
         headers: headers,
-        rows: rows
+        rows: rows,
+        moon_phase_url: moon_phase_url
       )
 
     {:noreply, socket}

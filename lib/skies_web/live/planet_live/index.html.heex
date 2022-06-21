@@ -1,33 +1,42 @@
-<div class="flex-auto content-center p-5">
-  <div class="p-2">
-    <.form let={f} for={@address_changeset} phx-submit="update_address">
-      <%= label f, :address %>
-      <%= text_input f, :address %>
-    </.form>
-  
+<div class="flex items-center justify-center min-h-screen bg-cyan-50">
+  <div class="bg-white p-2 m-3 space-y-10 shadow-2xl rounded-3xl md:p-40">
+    <div class="border flex justify-center md:space-y-0 md:space-x-8 md:mb-24 md:justify-end">
+      <img class="" src={@moon_phase_url} />
+      <div class="p-5">
+        <div class="ml-3">
+          <h4 class="font-bold">Observer Location</h4>
+          <p><%= @address %></p>
+          <p>Latitude: <%= @latitude %></p>
+          <p>Longitude: <%= @longitude %></p>
+        </div>
+        <div class="flex md:flex-row md:space-y-0">
+          <div class="group">
+            <.form let={f} for={@address_changeset} phx-submit="update_address">
+              <%= text_input f, :address, placeholder: "Update observer address", class: "border-none md:w-80 placeholder:font-thin focus:outline-none" %>
+            </.form>
+            <div class="ml-3 m-auto duration-500 opacity-0 text-blue-500 font-thin group-hover:opacity-100">Update address to change observer location.</div>
+          </div>
+        </div>
+    </div>
   </div>
-  <div class="p-5 m-2 border border-black">
-    <h4>Observer Location</h4>
-    <p><%= @address %></p>
-    <p>lat: <%= @latitude %></p>
-    <p>long: <%= @longitude %></p>
-    <p>elevation: <%= @elevation %>m</p>
-  </div>
-  <table>
-    <tr>
-      <%= for header <- @headers do %>
-      <th><%= header %></th>
-      <% end %>
-    </tr>
-    <%= for row <- @rows do %>
-    <tr class="border border-black">
-      <%= for cell <- row.cells do %>
-        <td class="border border-black p-2">
-          <%= Body.body(cell)
-          %>
-        </td>
-      <% end %>
-    </tr>
-    <% end %>
-  </table>
+    <!-- todo: visualize cells, remove table -->
+    <div class=""></div>
+      <table>
+        <tr>
+          <%= for header <- @headers do %>
+          <th><%= header %></th>
+          <% end %>
+        </tr>
+        <%= for row <- @rows do %>
+        <tr class="border border-black">
+          <%= for cell <- row.cells do %>
+            <td class="border border-black p-2">
+              <%= Body.body(cell)
+              %>
+            </td>
+          <% end %>
+        </tr>
+        <% end %>
+      </table>
+    </div>
 </div>
