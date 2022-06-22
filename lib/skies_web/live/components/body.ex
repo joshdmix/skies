@@ -15,7 +15,7 @@ defmodule SkiesWeb.Live.Components.Body do
         <div class=""><%= name %></div>
         <div class="">Eq. Dec <%= equatorial.declination.degrees %></div>
         <div class="">Eq. Right Asc <%= equatorial.right_ascension.hours %></div>
-        <div class="">Distance from Earth (AU) <%= distance.from_earth.au %></div>
+        <div class="">Distance from Earth (au) <%= distance.from_earth.au %></div>
       </div>
     """
   end
