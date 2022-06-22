@@ -30,6 +30,7 @@ defmodule SkiesWeb.PlanetLive.Index do
 
     {:ok,
      %{
+       earth: earth,
        elevation: elevation,
        latitude: latitude,
        longitude: longitude,
@@ -48,6 +49,7 @@ defmodule SkiesWeb.PlanetLive.Index do
      assign(socket,
        address: address,
        address_changeset: Address.changeset(),
+       earth: earth,
        elevation: elevation,
        from_date: @today,
        to_date: @tomorrow,
@@ -70,6 +72,7 @@ defmodule SkiesWeb.PlanetLive.Index do
 
     {:ok,
      %{
+       earth: earth,
        elevation: elevation,
        latitude: latitude,
        longitude: longitude,
@@ -95,6 +98,7 @@ defmodule SkiesWeb.PlanetLive.Index do
     socket =
       assign(socket,
         address: address,
+        earth: earth,
         latitude: latitude,
         longitude: longitude,
         headers: headers,

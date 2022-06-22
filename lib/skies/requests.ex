@@ -62,9 +62,19 @@ defmodule Skies.Requests do
       resp_body["data"]["table"]["rows"]
       |> Enum.map(&handle_response_row/1)
       |> List.flatten()
+      |> Enum.sort_by(fn row ->
+        %{distance: %{from_earth: %{au: distance_from_earth}}} = List.first(row.cells)
+        IO.inspect(distance_from_earth)
+        String.to_float(distance_from_earth)
+      end)
+
+    earth = Enum.find(rows, fn row -> row.cells |> List.first() |> Map.get(:id) == "earth" end)
+
+    rows = rows |> Enum.reject(fn row -> row.cells |> List.first() |> Map.get(:id) == "earth" end)
 
     {:ok,
      %{
+       earth: earth,
        elevation: observer["elevation"],
        latitude: observer["latitude"],
        longitude: observer["longitude"],

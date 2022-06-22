@@ -19,6 +19,9 @@
         </div>
       </div>
     </div>
+    <div> 
+      <%= @earth.cells |> List.first |> Body.earth() %> 
+    </div>
     <div>
       <%= for row <- @rows do %>
         <%= for cell <- row.cells do %>
