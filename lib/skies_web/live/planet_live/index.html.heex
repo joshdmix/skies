@@ -17,26 +17,14 @@
             <div class="ml-3 m-auto duration-500 opacity-0 text-blue-500 font-thin group-hover:opacity-100">Update address to change observer location.</div>
           </div>
         </div>
+      </div>
+    </div>
+    <div>
+      <%= for row <- @rows do %>
+        <%= for cell <- row.cells do %>
+          <%= Body.body(cell) %>
+        <% end %>
+      <% end %>
     </div>
   </div>
-    <!-- todo: visualize cells, remove table -->
-    <div class=""></div>
-      <table>
-        <tr>
-          <%= for header <- @headers do %>
-          <th><%= header %></th>
-          <% end %>
-        </tr>
-        <%= for row <- @rows do %>
-        <tr class="border border-black">
-          <%= for cell <- row.cells do %>
-            <td class="border border-black p-2">
-              <%= Body.body(cell)
-              %>
-            </td>
-          <% end %>
-        </tr>
-        <% end %>
-      </table>
-    </div>
 </div>
