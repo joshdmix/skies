@@ -68,18 +68,24 @@ defmodule SkiesWeb.PlanetLive.Index do
     %{cells: Enum.map(row.cells, &add_class_to_cell/1)}
   end
 
+  # todo clean up interpolatino
   defp add_class_to_cell(cell) do
     Map.put(
       cell,
       :class,
       # convert_distance_to_class_values(cell.distance.from_earth.au) <>
       base_cell_class() <>
-        " " <> "#{assign_random_color}"
+        " " <>
+        assign_random_color() <>
+        " " <>
+        assign_position(String.to_float(cell.distance.from_earth.au)) <>
+        " " <>
+        assign_ascension(String.to_float(cell.position.equatorial.right_ascension.hours))
     )
   end
 
   defp base_cell_class() do
-    "text-xs rounded-full border border-black text-center flex flex-col place-content-center"
+    "absolute text-xs w-[4rem] h-[4rem] rounded-full border border-black text-center flex flex-col place-content-center"
   end
 
   defp convert_distance_to_class_values(distance) do
@@ -102,6 +108,64 @@ defmodule SkiesWeb.PlanetLive.Index do
       end
 
     Enum.random(colors)
+  end
+
+  # todo this will have to be better binned, binning allows for commented TW classes in heex
+  defp assign_ascension(ascension) do
+    hrs =
+      cond do
+        ascension < 1 ->
+          "1"
+
+        ascension < 5 ->
+          "10"
+
+        ascension < 10 ->
+          "20"
+
+        ascension < 20 ->
+          "30"
+
+        ascension < 50 ->
+          "40"
+
+        true ->
+          "50"
+      end
+
+    "right-[#{hrs}rem]"
+  end
+
+  # todo need to dial in the bins
+  defp assign_position(distance) do
+    space =
+      cond do
+        distance < 0.1 ->
+          "1"
+
+        distance < 1.0 ->
+          "10"
+
+        distance < 1.2 ->
+          "20"
+
+        distance < 3.0 ->
+          "30"
+
+        distance < 5.0 ->
+          "40"
+
+        distance < 10.0 ->
+          "50"
+
+        distance < 20.0 ->
+          "60"
+
+        true ->
+          "70"
+      end
+
+    "top-[#{space}rem]"
   end
 
   def handle_event(

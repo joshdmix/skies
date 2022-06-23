@@ -145,7 +145,7 @@ defmodule Skies.Requests do
         "region_code" => region_code
         # "street" => nil,
         # "type" => "locality"
-      } = body |> Jason.decode!() |> Map.get("data") |> List.first()
+      } = body |> IO.inspect() |> Jason.decode!() |> Map.get("data") |> List.first()
 
       # todo - currently this assumes first position result is correct
 
