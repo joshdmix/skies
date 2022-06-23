@@ -19,15 +19,15 @@
         </div>
       </div>
     </div>
-    <div> 
+    <div class="relative"> 
       <%= @earth.cells |> List.first |> Body.earth() %> 
-    </div>
-    <div>
-      <%= for row <- @rows do %>
-        <%= for cell <- row.cells do %>
-          <%= Body.body(cell) %>
+      <div>
+        <%= for row <- @rows do %>
+          <%= for cell <- row.cells do %>
+            <%= Body.body(cell) %>
+          <% end %>
         <% end %>
-      <% end %>
+      </div>
     </div>
   </div>
 </div>

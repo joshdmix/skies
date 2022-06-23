@@ -38,6 +38,8 @@ defmodule SkiesWeb.PlanetLive.Index do
        rows: rows
      }} = list_planets(default_params)
 
+    rows = Enum.map(rows, &add_class_to_cells/1)
+
     {:ok, moon_phase_url} =
       Skies.Requests.moon_phase_request(
         %{date: @today, latitude: latitude, longitude: longitude},
@@ -60,6 +62,46 @@ defmodule SkiesWeb.PlanetLive.Index do
        rows: rows,
        moon_phase_url: moon_phase_url
      )}
+  end
+
+  defp add_class_to_cells(row) do
+    %{cells: Enum.map(row.cells, &add_class_to_cell/1)}
+  end
+
+  defp add_class_to_cell(cell) do
+    Map.put(
+      cell,
+      :class,
+      # convert_distance_to_class_values(cell.distance.from_earth.au) <>
+      base_cell_class() <>
+        " " <> "#{assign_random_color}"
+    )
+  end
+
+  defp base_cell_class() do
+    "text-xs rounded-full border border-black text-center flex flex-col place-content-center"
+  end
+
+  defp convert_distance_to_class_values(distance) do
+    px = String.to_float(distance) * 50
+    " top-[#{px}px] left-[#{px}px]"
+  end
+
+  defp assign_random_color() do
+    colors =
+      for color <- ["blue", "orange", "red", "green"],
+          value <- [
+            "100",
+            "200",
+            "300",
+            "400",
+            "500",
+            "600"
+          ] do
+        "bg-#{color}-#{value}"
+      end
+
+    Enum.random(colors)
   end
 
   def handle_event(
