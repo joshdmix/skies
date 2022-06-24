@@ -58,13 +58,15 @@ defmodule Skies.Requests do
         DateTime.truncate(dt, :second)
       end)
 
+    IO.inspect(resp_body["data"])
+
     rows =
       resp_body["data"]["table"]["rows"]
       |> Enum.map(&handle_response_row/1)
       |> List.flatten()
       |> Enum.sort_by(fn row ->
         %{distance: %{from_earth: %{au: distance_from_earth}}} = List.first(row.cells)
-        IO.inspect(distance_from_earth)
+
         String.to_float(distance_from_earth)
       end)
 
@@ -145,7 +147,7 @@ defmodule Skies.Requests do
         "region_code" => region_code
         # "street" => nil,
         # "type" => "locality"
-      } = body |> IO.inspect() |> Jason.decode!() |> Map.get("data") |> List.first()
+      } = body |> Jason.decode!() |> Map.get("data") |> List.first()
 
       # todo - currently this assumes first position result is correct
 

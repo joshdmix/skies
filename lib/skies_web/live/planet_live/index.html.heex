@@ -19,15 +19,23 @@
         </div>
       </div>
     </div>
-    <div class="relative"> 
-      <%= @earth.cells |> List.first |> Body.earth() %> 
-      <div>
-        <%= for row <- @rows do %>
-          <%= for cell <- row.cells do %>
-            <%= Body.body(cell) %>
-          <% end %>
+      <%= for row <- @rows do %>
+        <%= for cell <- row.cells do %>
+          <div class="relative border-t border-black h-[3rem] skew-x-[#{cell.position.equatorial.right_ascension.hours}deg]">
+            <p class="relative bottom-1/2 left-1/2"><%= cell.distance.from_earth.au %>au</p>
+            <div class="absolute bottom-1/2 right-0">
+              <%= Body.body(cell) %>
+            </div>
+            <div class="absolute bottom-1/2 left-0"> 
+              <%= @earth.cells |> List.first |> Body.earth() %> 
+            </div>
+          </div>
         <% end %>
-      </div>
-    </div>
+      <% end %>
   </div>
 </div>
+    <!--
+    <%= for deg <- [-360..360] do %>
+      "skew-x-[#{deg}deg]"
+    <% end %>
+    -->

@@ -76,16 +76,16 @@ defmodule SkiesWeb.PlanetLive.Index do
       # convert_distance_to_class_values(cell.distance.from_earth.au) <>
       base_cell_class() <>
         " " <>
-        assign_random_color() <>
-        " " <>
-        assign_position(String.to_float(cell.distance.from_earth.au)) <>
-        " " <>
-        assign_ascension(String.to_float(cell.position.equatorial.right_ascension.hours))
+        assign_random_color()
+      # " " <>
+      # assign_position(String.to_float(cell.distance.from_earth.au))
+      # " " <>
+      # assign_ascension(String.to_float(cell.position.equatorial.right_ascension.hours))
     )
   end
 
   defp base_cell_class() do
-    "absolute text-xs w-[4rem] h-[4rem] rounded-full border border-black text-center flex flex-col place-content-center"
+    "text-xs w-[4rem] h-[4rem] rounded-full border border-black text-center flex flex-col place-content-center"
   end
 
   defp convert_distance_to_class_values(distance) do
@@ -200,6 +200,8 @@ defmodule SkiesWeb.PlanetLive.Index do
         %{type: "portrait-simple"},
         %{"moonStyle" => "sketch", "backgroundStyle" => "stars"}
       )
+
+    rows = Enum.map(rows, &add_class_to_cells/1)
 
     socket =
       assign(socket,
