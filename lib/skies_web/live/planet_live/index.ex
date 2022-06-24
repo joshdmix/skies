@@ -65,11 +65,11 @@ defmodule SkiesWeb.PlanetLive.Index do
   end
 
   defp add_class_to_cells(row) do
-    %{cells: Enum.map(row.cells, &add_class_to_cell/1)}
+    %{cells: Enum.map(row.cells, &add_class_to_cell/1)} |> IO.inspect()
   end
 
   # todo clean up interpolatino
-  defp add_class_to_cell(cell) do
+  defp add_class_to_cell(%{position: %{equatorial: %{right_ascension: %{hours: hours}}}} = cell) do
     Map.put(
       cell,
       :class,
@@ -82,6 +82,23 @@ defmodule SkiesWeb.PlanetLive.Index do
       # " " <>
       # assign_ascension(String.to_float(cell.position.equatorial.right_ascension.hours))
     )
+    |> Map.put(:container_class, base_container_class() <> assign_rotation(hours))
+  end
+
+  defp base_container_class() do
+    "relative border-t border-black h-[3rem] "
+  end
+
+  defp assign_rotation(asc_hrs) do
+    hours = 0..24 |> Enum.to_list()
+    degrees = 0..360//15 |> Enum.to_list()
+    zipped = Enum.zip(hours, degrees)
+    hours_to_degrees = zipped |> Enum.into(Map.new())
+
+    int_asc_hrs = asc_hrs |> String.to_float() |> round
+    deg = Map.get(hours_to_degrees, int_asc_hrs)
+
+    "rotate-[#{deg}deg]"
   end
 
   defp base_cell_class() do
@@ -95,16 +112,8 @@ defmodule SkiesWeb.PlanetLive.Index do
 
   defp assign_random_color() do
     colors =
-      for color <- ["blue", "orange", "red", "green"],
-          value <- [
-            "100",
-            "200",
-            "300",
-            "400",
-            "500",
-            "600"
-          ] do
-        "bg-#{color}-#{value}"
+      for color <- ["blue", "orange", "red", "green", "emerald", "lime", "amber"] do
+        "bg-#{color}-500"
       end
 
     Enum.random(colors)

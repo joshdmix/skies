@@ -15,9 +15,6 @@ defmodule SkiesWeb.Live.Components.Body do
 
     ~H"""
     <!--
-    <%= for deg <- [-360..360] do %>
-      "skew-x-[#{deg}deg]"
-    <% end %>
     "right-[1rem]"
     "right-[10rem]"
     "right-[20rem]"
@@ -38,17 +35,13 @@ defmodule SkiesWeb.Live.Components.Body do
     "top-50"
     "top-60"
     "top-70"
-    <%= for color <- ["blue", "orange", "red", "green"],
-          value <- [
-            "100",
-            "200",
-            "300",
-            "400",
-            "500",
-            "600"
-          ] do %>
-        "bg-#{color}-#{value}"
-      <% end %>
+    "bg-blue-500"
+    "bg-orange-500"
+    "bg-red-500"
+    "bg-green-500"
+    "bg-emerald-500"
+    "bg-lime-500"
+    "bg-amber-500"
     -->
       <div class={class}>
         <div class=""><%= name %></div>

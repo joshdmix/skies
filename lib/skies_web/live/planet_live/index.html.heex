@@ -21,8 +21,9 @@
     </div>
       <%= for row <- @rows do %>
         <%= for cell <- row.cells do %>
-          <div class="relative border-t border-black h-[3rem] skew-x-[#{cell.position.equatorial.right_ascension.hours}deg]">
+          <div class={cell.container_class}>
             <p class="relative bottom-1/2 left-1/2"><%= cell.distance.from_earth.au %>au</p>
+            <p class="relative bottom-1/2 left-1/2"><%= cell.position.equatorial.right_ascension.hours %>hrs</p>
             <div class="absolute bottom-1/2 right-0">
               <%= Body.body(cell) %>
             </div>
@@ -35,7 +36,29 @@
   </div>
 </div>
     <!--
-    <%= for deg <- [-360..360] do %>
-      "skew-x-[#{deg}deg]"
-    <% end %>
+rotate-[0deg] 
+rotate-[15deg]
+rotate-[30deg]
+rotate-[45deg]
+ rotate-[60deg]
+ rotate-[75deg]
+ rotate-[90deg]
+ rotate-[105deg]
+ rotate-[120deg] 
+ rotate-[135deg]
+ rotate-[150deg]
+ rotate-[165deg]
+ rotate-[180deg] 
+ rotate-[195deg]
+ rotate-[210deg]
+ rotate-[225deg]
+ rotate-[240deg] 
+ rotate-[255deg]
+ rotate-[270deg]
+ rotate-[285deg]
+ rotate-[300deg] 
+ rotate-[315deg]
+ rotate-[330deg]
+ rotate-[345deg]
+ rotate-[360deg]
     -->
