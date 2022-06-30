@@ -60,12 +60,24 @@ defmodule SkiesWeb.PlanetLive.Index do
        longitude: longitude,
        headers: headers,
        rows: rows,
-       moon_phase_url: moon_phase_url
+       moon_phase_url: moon_phase_url,
+       selected_body: "mars"
      )}
   end
 
+  @impl true
+  def handle_params(params, _url, socket) do
+    {:noreply, parse_params(socket, params)}
+  end
+
+  defp parse_params(socket, %{"body" => body}) do
+    assign(socket, selected_body: body)
+  end
+
+  defp parse_params(socket, _params), do: socket
+
   defp add_class_to_cells(row) do
-    %{cells: Enum.map(row.cells, &add_class_to_cell/1)} |> IO.inspect()
+    %{cells: Enum.map(row.cells, &add_class_to_cell/1)}
   end
 
   # todo clean up interpolatino
@@ -82,11 +94,13 @@ defmodule SkiesWeb.PlanetLive.Index do
       # " " <>
       # assign_ascension(String.to_float(cell.position.equatorial.right_ascension.hours))
     )
-    |> Map.put(:container_class, base_container_class() <> assign_rotation(hours))
+    |> Map.put(:container_class, base_container_class())
+
+    # <> assign_rotation(hours))
   end
 
   defp base_container_class() do
-    "relative border-t border-black h-[3rem] "
+    "relative border-t border-black h-[3rem] m-15"
   end
 
   defp assign_rotation(asc_hrs) do

@@ -11,8 +11,6 @@ defmodule SkiesWeb.Live.Components.Body do
           position: %{constellation: constellation, equatorial: equatorial, horizonal: horizonal}
         } = assigns
       ) do
-    IO.inspect(class, label: "in body")
-
     ~H"""
     <!--
     "right-[1rem]"
@@ -45,7 +43,6 @@ defmodule SkiesWeb.Live.Components.Body do
     -->
       <div class={class}>
         <div class=""><%= name %></div>
-        <div class="">Eq. Right Asc <%= equatorial.right_ascension.hours %></div>
         <!--
          <div class="">Eq. Dec <%= equatorial.declination.degrees %></div>
          <div class="">Distance from Earth (au) <%= distance.from_earth.au %></div>

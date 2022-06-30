@@ -58,8 +58,6 @@ defmodule Skies.Requests do
         DateTime.truncate(dt, :second)
       end)
 
-    IO.inspect(resp_body["data"])
-
     rows =
       resp_body["data"]["table"]["rows"]
       |> Enum.map(&handle_response_row/1)
